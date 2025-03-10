@@ -12,6 +12,10 @@ public class HospitalManagement {
         Scanner scanner = new Scanner(System.in);
         int choice;
 
+         // JDBC URL for SQL Server using port 1434
+        String url = "jdbc:sqlserver://*********:1434;databaseName=HospitalDB;encrypt=true;trustServerCertificate=true";
+        String username = "******"; // Change this if needed
+        String password = "********"; // Change this if needed
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
             System.out.println("✅ Connected to SQL Server successfully!");
 
