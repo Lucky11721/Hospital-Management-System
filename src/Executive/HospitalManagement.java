@@ -7,10 +7,7 @@ import java.sql.*;
 import java.util.*;
 
 public class HospitalManagement {
-    private static final String URL = "jdbc:sqlserver://LUCKYSLAPYY:1434;databaseName=HospitalDB;encrypt=true;trustServerCertificate=true";
-    private static final String USERNAME = "Lucky";
-    private static final String PASSWORD = "Hospital@123";
-
+    
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int choice;
