@@ -7,9 +7,9 @@ import java.sql.SQLException;
 public class DatabaseConnection {
     public static void main(String[] args) {
         // JDBC URL for SQL Server using port 1434
-        String url = "jdbc:sqlserver://LUCKYSLAPYY:1434;databaseName=HospitalDB;encrypt=true;trustServerCertificate=true";
-        String username = "Lucky"; // Change this if needed
-        String password = "Hospital@123"; // Change this if needed
+        String url = "jdbc:sqlserver://*********:1434;databaseName=HospitalDB;encrypt=true;trustServerCertificate=true";
+        String username = "******"; // Change this if needed
+        String password = "********"; // Change this if needed
 
         try {
             // Establish connection
