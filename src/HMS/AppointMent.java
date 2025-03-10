@@ -1,18 +1,26 @@
 package HMS;
 
-import javax.print.Doc;
-
 public class AppointMent {
-   private Patient patient;
+    private int id;
+    private Patient patient;
     private Doctor doctor;
-    private String Date;
+    private String date;
 
-    public AppointMent(Patient patient , Doctor doctor , String Date){
+    public AppointMent(int id, Patient patient, Doctor doctor, String date) {
+        this.id = id;
         this.patient = patient;
         this.doctor = doctor;
-        this.Date = Date;
+        this.date = date;
     }
+
+    public int getId() { return id; }
+    public Patient getPatient() { return patient; }
+    public Doctor getDoctor() { return doctor; }
+    public String getDate() { return date; }
+
+    @Override
     public String toString() {
-        return "Appointment: [Patient: " + patient + ", Doctor: " + doctor + ", Date: " + Date + "]";
+        return "Appointment ID: " + id + ", Patient: " + patient.getName() +
+                ", Doctor: " + doctor.getName() + ", Date: " + date;
     }
 }

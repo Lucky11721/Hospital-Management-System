@@ -1,23 +1,22 @@
 package HMS;
 
 public class Doctor {
-    private static int idCounter = 1;
-    private int Doctor_id;
-    private String Doctor_name;
+    private int id;
+    private String name;
     private String specialty;
 
-    public Doctor(String name, String specialty) {
-        this.Doctor_id = idCounter++;
-        this.Doctor_name = name;
+    public Doctor(int id, String name, String specialty) {
+        this.id = id;
+        this.name = name;
         this.specialty = specialty;
     }
 
-    public int getId() {
-        return Doctor_id;
-    }
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public String getSpecialty() { return specialty; }
 
     @Override
     public String toString() {
-        return "Doctor ID: " + Doctor_id + ", Name: " + Doctor_name + ", Specialty: " + specialty;
+        return "Doctor ID: " + id + ", Name: " + name + ", Specialty: " + specialty;
     }
 }

@@ -1,86 +1,105 @@
 package Executive;
-import java.util.*;
+
 import HMS.Patient;
 import HMS.Doctor;
 import HMS.AppointMent;
+import java.sql.*;
+import java.util.*;
+
 public class HospitalManagement {
-    private static ArrayList<Patient> patients = new ArrayList<>();
-    private static ArrayList<Doctor> doctors = new ArrayList<>();
-    private static ArrayList<AppointMent> appointments = new ArrayList<>();
+    private static final String URL = "jdbc:sqlserver://LUCKYSLAPYY:1434;databaseName=HospitalDB;encrypt=true;trustServerCertificate=true";
+    private static final String USERNAME = "Lucky";
+    private static final String PASSWORD = "Hospital@123";
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int choice;
 
-        do {
-            System.out.println("Hospital Management System");
-            System.out.println("1. Add Patient");
-            System.out.println("2. Add Doctor");
-            System.out.println("3. Schedule Appointment");
-            System.out.println("4. View Patients");
-            System.out.println("5. View Doctors");
-            System.out.println("6. View Appointments");
-            System.out.println("0. Exit");
-            System.out.print("Enter your choice: ");
-            choice = scanner.nextInt();
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+            System.out.println("✅ Connected to SQL Server successfully!");
 
-            switch (choice) {
-                case 1:
-                    addPatient(scanner);
-                    break;
-                case 2:
-                    addDoctor(scanner);
-                    break;
-                case 3:
-                    scheduleAppointment(scanner);
-                    break;
-                case 4:
-                    viewPatients();
-                    break;
-                case 5:
-                    viewDoctors();
-                    break;
-                case 6:
-                    viewAppointments();
-                    break;
-                case 0:
-                    System.out.println("Exiting...");
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-            }
-        } while (choice != 0);
+            do {
+                System.out.println("\nHospital Management System");
+                System.out.println("1. Add Patient");
+                System.out.println("2. Add Doctor");
+                System.out.println("3. Schedule Appointment");
+                System.out.println("4. View Patients");
+                System.out.println("5. View Doctors");
+                System.out.println("6. View Appointments");
+                System.out.println("0. Exit");
+                System.out.print("Enter your choice: ");
+                choice = scanner.nextInt();
 
+                switch (choice) {
+                    case 1:
+                        addPatient(scanner, connection);
+                        break;
+                    case 2:
+                        addDoctor(scanner, connection);
+                        break;
+                    case 3:
+                        scheduleAppointment(scanner, connection);
+                        break;
+                    case 4:
+                        viewPatients(connection);
+                        break;
+                    case 5:
+                        viewDoctors(connection);
+                        break;
+                    case 6:
+                        viewAppointments(connection);
+                        break;
+                    case 0:
+                        System.out.println("Exiting...");
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
+                }
+            } while (choice != 0);
+        } catch (SQLException e) {
+            System.out.println("❌ Database Connection Failed!");
+            e.printStackTrace();
+        }
         scanner.close();
     }
 
-    private static void addPatient(Scanner scanner) {
+    // Add Patient to Database
+    private static void addPatient(Scanner scanner, Connection connection) throws SQLException {
         System.out.print("Enter Patient Name: ");
         String name = scanner.next();
-        System.out.print("Enter Patient Age: ");
-        int age = scanner.nextInt();
         System.out.print("Enter Patient Gender: ");
         String gender = scanner.next();
+        System.out.print("Enter Patient Age: ");
+        int age = scanner.nextInt();
 
-        Patient patient = new Patient(name,gender, age);
-        patients.add(patient);
-
-        System.out.println("Patient added successfully!");
+        String sql = "INSERT INTO Patients (Name, Gender, Age) VALUES (?, ?, ?)";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, name);
+            pstmt.setString(2, gender);
+            pstmt.setInt(3, age);
+            pstmt.executeUpdate();
+            System.out.println("✅ Patient added successfully!");
+        }
     }
 
-    private static void addDoctor(Scanner scanner) {
+    // Add Doctor to Database
+    private static void addDoctor(Scanner scanner, Connection connection) throws SQLException {
         System.out.print("Enter Doctor Name: ");
         String name = scanner.next();
         System.out.print("Enter Doctor Specialty: ");
         String specialty = scanner.next();
 
-        Doctor doctor = new Doctor(name, specialty);
-        doctors.add(doctor);
-
-        System.out.println("Doctor added successfully!");
+        String sql = "INSERT INTO Doctors (Name, Specialty) VALUES (?, ?)";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, name);
+            pstmt.setString(2, specialty);
+            pstmt.executeUpdate();
+            System.out.println("✅ Doctor added successfully!");
+        }
     }
 
-    private static void scheduleAppointment(Scanner scanner) {
+    // Schedule Appointment
+    private static void scheduleAppointment(Scanner scanner, Connection connection) throws SQLException {
         System.out.print("Enter Patient ID: ");
         int patientId = scanner.nextInt();
         System.out.print("Enter Doctor ID: ");
@@ -88,55 +107,57 @@ public class HospitalManagement {
         System.out.print("Enter Appointment Date (YYYY-MM-DD): ");
         String date = scanner.next();
 
-        Patient patient = findPatientById(patientId);
-        Doctor doctor = findDoctorById(doctorId);
-
-        if (patient != null && doctor != null) {
-            AppointMent appointment = new AppointMent(patient, doctor, date);
-            appointments.add(appointment);
-            System.out.println("Appointment scheduled successfully!");
-        } else {
-            System.out.println("Invalid Patient ID or Doctor ID.");
+        String sql = "INSERT INTO Appointments (PatientID, DoctorID, Date) VALUES (?, ?, ?)";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, patientId);
+            pstmt.setInt(2, doctorId);
+            pstmt.setString(3, date);
+            pstmt.executeUpdate();
+            System.out.println("✅ Appointment scheduled successfully!");
         }
     }
 
-    private static void viewPatients() {
-        System.out.println("List of Patients:");
-        for (Patient patient : patients) {
-            System.out.println(patient);
-        }
-    }
-
-    private static void viewDoctors() {
-        System.out.println("List of Doctors:");
-        for (Doctor doctor : doctors) {
-            System.out.println(doctor);
-        }
-    }
-
-    private static void viewAppointments() {
-        System.out.println("List of Appointments:");
-        for (AppointMent appointment : appointments) {
-            System.out.println(appointment);
-        }
-    }
-
-    private static Patient findPatientById(int id) {
-        for (Patient patient : patients) {
-            if (patient.getId() == id) {
-                return patient;
+    // View Patients
+    private static void viewPatients(Connection connection) throws SQLException {
+        String query = "SELECT * FROM Patients";
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+            System.out.println("\nList of Patients:");
+            while (rs.next()) {
+                System.out.println("ID: " + rs.getInt("PatientID") +
+                        ", Name: " + rs.getString("Name") +
+                        ", Gender: " + rs.getString("Gender") +
+                        ", Age: " + rs.getInt("Age"));
             }
         }
-        return null;
     }
 
-    private static Doctor findDoctorById(int id) {
-        for (Doctor doctor : doctors) {
-            if (doctor.getId() == id) {
-                return doctor;
+    // View Doctors
+    private static void viewDoctors(Connection connection) throws SQLException {
+        String query = "SELECT * FROM Doctors";
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+            System.out.println("\nList of Doctors:");
+            while (rs.next()) {
+                System.out.println("ID: " + rs.getInt("DoctorID") +
+                        ", Name: " + rs.getString("Name") +
+                        ", Specialty: " + rs.getString("Specialty"));
             }
         }
-        return null;
+    }
+
+    // View Appointments
+    private static void viewAppointments(Connection connection) throws SQLException {
+        String query = "SELECT a.AppointmentID, p.Name AS PatientName, d.Name AS DoctorName, a.Date " +
+                "FROM Appointments a " +
+                "JOIN Patients p ON a.PatientID = p.PatientID " +
+                "JOIN Doctors d ON a.DoctorID = d.DoctorID";
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+            System.out.println("\nList of Appointments:");
+            while (rs.next()) {
+                System.out.println("ID: " + rs.getInt("AppointmentID") +
+                        ", Patient: " + rs.getString("PatientName") +
+                        ", Doctor: " + rs.getString("DoctorName") +
+                        ", Date: " + rs.getString("Date"));
+            }
+        }
     }
 }
-
